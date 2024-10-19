@@ -1,6 +1,7 @@
 package com.kmehilli.cashcard;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,39 +20,39 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/cashcards")
 class CashCardController {
-	private final CashCardRepository cashCardRepository;
 
-	private CashCardController(CashCardRepository cashCardRepository) {
-		this.cashCardRepository = cashCardRepository;
-	}
+    private final CashCardRepository cashCardRepository;
 
-	@GetMapping("/{id}")
-	private ResponseEntity<CashCard> findById(@PathVariable Long id) {
-		Optional<CashCard> cashCardOptional = cashCardRepository.findById(id);
-		if (cashCardOptional.isPresent()) {
-			return ResponseEntity.ok(cashCardOptional.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
-	}
+    private CashCardController(CashCardRepository cashCardRepository) {
+        this.cashCardRepository = cashCardRepository;
+    }
 
-	@GetMapping()
-	private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable) {
-		Page<CashCard> page = cashCardRepository.findAll(
-			PageRequest.of(pageable.getPageNumber(), 
-			pageable.getPageSize(), 
-			pageable.getSortOr(Sort.by(Sort.Direction.ASC, "amount"))));
-		return ResponseEntity.ok(page.getContent());
-	}
-	
-	@PostMapping()
-	private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb) {
-		CashCard savedCashCard = cashCardRepository.save(newCashCardRequest);
-		URI locationOfNewCashCard = ucb.path("/cashcards/{id}").buildAndExpand(savedCashCard.id()).toUri();
-		
-		return ResponseEntity.created(locationOfNewCashCard).build();
-	}
-	
-	
-	
+    @GetMapping("/{id}")
+    private ResponseEntity<CashCard> findById(@PathVariable Long id, Principal Principal) {
+        Optional<CashCard> cashCardOptional = Optional.ofNullable(cashCardRepository.findByIdAndOwner(id, Principal.getName()));
+        if (cashCardOptional.isPresent()) {
+            return ResponseEntity.ok(cashCardOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping()
+    private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable, Principal principal) {
+        Page<CashCard> page = cashCardRepository
+                .findByOwner(principal.getName(), PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        pageable.getSortOr(Sort.by(Sort.Direction.ASC, "amount"))));
+        return ResponseEntity.ok(page.getContent());
+    }
+
+    @PostMapping()
+    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb) {
+        CashCard savedCashCard = cashCardRepository.save(newCashCardRequest);
+        URI locationOfNewCashCard = ucb.path("/cashcards/{id}").buildAndExpand(savedCashCard.id()).toUri();
+
+        return ResponseEntity.created(locationOfNewCashCard).build();
+    }
+
 }
