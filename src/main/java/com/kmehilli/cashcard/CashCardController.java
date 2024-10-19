@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cashcards")
 class CashCardController {
-
-   @GetMapping("/{id}")
-   private ResponseEntity<CashCard> findById(@PathVariable Long id) {
-    if (id.equals(99L)) {
-      CashCard cashCard = new CashCard(99L, 123.45);
-      return ResponseEntity.ok(cashCard);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
-   }
+	@GetMapping("/{id}")
+	private ResponseEntity<CashCard> findById(@PathVariable Long id) {
+		if (id.equals(99L)) {
+			CashCard cashCard = new CashCard(99L, 123.45);
+			return ResponseEntity.ok(cashCard);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 }
