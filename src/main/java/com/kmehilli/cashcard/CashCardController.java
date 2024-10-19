@@ -3,6 +3,7 @@ package com.kmehilli.cashcard;
 import java.net.URI;
 import java.security.Principal;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -75,7 +76,10 @@ class CashCardController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<Void> deleteCashCard(@PathVariable Long id) {
+    private ResponseEntity<Void> deleteCashCard(@PathVariable Long id, Principal principal) {
+        if (!cashCardRepository.existsByIdAndOwner(id, principal.getName())) {
+            return ResponseEntity.notFound().build();
+        }
         cashCardRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
