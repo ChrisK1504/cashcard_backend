@@ -1,5 +1,7 @@
 package com.kmehilli.cashcard;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,18 @@ public class CashCardJsonTest {
   private JacksonTester<CashCard> json;
 
   @Test
-  void cashCardSerializationTest() {
+  void cashCardSerializationTest() throws IOException {
+    CashCard cashCard = new CashCard(99L, 123.45);
+
+    // Assert that the cashCard object is equal to the json after serialization
+    assertThat(json.write(cashCard)).isStrictlyEqualToJson("expected.json");
+
+    // Extracting and comparing values
+    assertThat(json.write(cashCard)).hasJsonPathNumberValue("@.id");
+    assertThat(json.write(cashCard)).extractingJsonPathNumberValue("@.id").isEqualTo(99);
+
+    assertThat(json.write(cashCard)).hasJsonPathNumberValue("@.amount");
+    assertThat(json.write(cashCard)).extractingJsonPathNumberValue("@.amount").isEqualTo(123.45);
   }
   
 }
