@@ -50,7 +50,7 @@ Fetch a specific cash card by its ID for the authenticated user.
   ```json
   {
     "id": Long,
-    "amount": Decimal,
+    "amount": Double,
     "owner": String
   }
   ```
@@ -77,7 +77,7 @@ Fetch all cash cards for the authenticated user with pagination.
   [
     {
       "id": Long,
-      "amount": Decimal,
+      "amount": Double,
       "owner": String
     }
   ]
