@@ -173,7 +173,7 @@ Delete a cash card by its ID for the authenticated user.
 ## Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/cashcard-backend.git
+    git clone https://github.com/ChrisK1504/cashcard-backend.git
     ```
 2. Navigate to the project directory:
     ```bash
